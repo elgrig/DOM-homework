@@ -21,35 +21,41 @@ const comments = [
 ];
 
 const renderComments = () => {
+    const quoteElement = document.querySelectorAll('.quote');
     const commentsHtml = comments.map((comment, index) => {
         return `<li class="comment">
     <div class="comment-header">
         <div>${comment.name}</div>
         <div>${comment.date}</div>
     </div>
-    <div class="comment-body">
+    <div class="comment-body" data-index="${index}">    
         <div class="comment-text">
-        ${comment.text}
-        </div>
-    </div>
+        ${comment.text.replaceAll("QUOTE_BEGIN", "<div class='quote'>").replaceAll("QUOTE_END", "</div>")}
+        </div >
+    </div >
     <div class="comment-footer">
         <div class="likes">
-        <span class="likes-counter">${comment.counter}</span>
-        <button data-index="${index}" class="like-button ${comments[index].isLiked ? "-active-like" : ""}"></button>
-        </div>
+            <span class="likes-counter">${comment.counter}</span>
+            <button data-index="${index}" class="like-button ${comments[index].isLiked ? "-active-like" : ""}"></button>
     </div>
-    </li>`
+    </div >
+    </li > `
     }).join("");
+
 
     listElement.innerHTML = commentsHtml;
 
     initLikeComments();
+
+    initRepostCommentElements();
+
 };
+
 
 const initLikeComments = () => {
     const likeCommentsElements = document.querySelectorAll(".like-button");
     for (const likeCommentElement of likeCommentsElements) {
-        likeCommentElement.addEventListener('click', () => {
+        likeCommentElement.addEventListener('click', (event) => {
             const index = likeCommentElement.dataset.index;
             if (comments[index].isLiked === false) {
                 comments[index].isLiked = true;
@@ -59,12 +65,25 @@ const initLikeComments = () => {
                 comments[index].isLiked = false;
                 comments[index].counter--;
             }
+            event.stopPropagation();
             renderComments();
         });
     };
 };
 
+
+const initRepostCommentElements = () => {
+    const repostCommentElements = document.querySelectorAll(".comment-body");
+    for (const repostCommentElement of repostCommentElements) {
+        repostCommentElement.addEventListener('click', () => {
+            const index = repostCommentElement.dataset.index;
+            commentInputElement.value = 'QUOTE_BEGIN' + comments[index].name + ":" + "\n" + comments[index].text + 'QUOTE_END';
+        });
+    };
+};
+
 renderComments();
+
 
 buttonElement.addEventListener("click", () => {
 
@@ -86,8 +105,8 @@ buttonElement.addEventListener("click", () => {
     let currentDate = date.getDate() + "." + months[date.getMonth()] + "." + date.getFullYear() + " " + date.getHours() + ":" + minutes[date.getMinutes()];
 
     comments.push({
-        name: nameInputElement.value,
-        text: commentInputElement.value,
+        name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
+        text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
         date: currentDate,
         counter: '0',
         isLiked: false,
