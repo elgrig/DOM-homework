@@ -21,7 +21,6 @@ const comments = [
 ];
 
 const renderComments = () => {
-    const quoteElement = document.querySelectorAll('.quote');
     const commentsHtml = comments.map((comment, index) => {
         return `<li class="comment">
     <div class="comment-header">
@@ -90,14 +89,15 @@ buttonElement.addEventListener("click", () => {
     nameInputElement.classList.remove('error');
     commentInputElement.classList.remove('error');
 
-    if (nameInputElement.value === "") {
+
+    if (nameInputElement.value.trim() === "") {
         nameInputElement.classList.add('error');
         return;
-    }
-    if (commentInputElement.value === "") {
+    } else if (commentInputElement.value.trim() === "") {
         commentInputElement.classList.add('error');
         return;
     }
+
 
     let date = new Date();
     const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
