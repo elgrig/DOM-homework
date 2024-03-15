@@ -32,6 +32,7 @@ body {
     );
     filter: drop-shadow(0px 20px 67px rgba(0, 0, 0, 0.08));
     border-radius: 20px;
+    white-space: pre-line
   }
 
   .comments {
@@ -62,6 +63,7 @@ body {
 
   .comment-text {
     font-size: 32px;
+    word-break: break-all;
   }
 
   .likes {
@@ -114,7 +116,7 @@ body {
   .add-form-text {
     margin-top: 12px;
     padding: 22px;
-    resize: none;
+    resize: none; 
   }
 
   .add-form-row {
@@ -138,4 +140,15 @@ body {
 
   .error {
     background-color: #ffd3e1;
+  }
+
+  .quote {
+    font-size: 18px;
+    padding: 10px 13px;   
+    margin-bottom: 20px;
+    color: black;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 7px;
+    background-color:rgb(245, 234, 250);
   }
