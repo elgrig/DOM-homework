@@ -3,37 +3,44 @@ const commentInputElement = document.getElementById('comment-input');
 const listElement = document.getElementById('list');
 const buttonElement = document.getElementById('button-write');
 
-let date = new Date();
-const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-const minutes = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59"];
-let currentDate = date.getDate() + "." + months[date.getMonth()] + "." + date.getFullYear() + " " + date.getHours() + ":" + minutes[date.getMinutes()];
+
+function getDate(date) {
+    const currentDate = new Date(date);
+    const months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+    const minutes = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59"];
+    return currentDate.getDate() + " " + months[currentDate.getMonth()] + " " + currentDate.getFullYear() + " " + currentDate.getHours() + ":" + minutes[currentDate.getMinutes()];
+}
 
 
-const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/elena-nikitenko/comments", {
-    method: "GET",
-});
-
-fetchPromise.then((response) => {
-
-    const jsonPromise = response.json();
-
-    jsonPromise.then((responseData) => {
-        console.log(responseData);
-
-        const appComments = responseData.comments.map((comment) => {
-            return {
-                name: comment.author.name,
-                date: currentDate,
-                text: comment.text,
-                likes: comment.likes,
-                isLiked: false,
-            }
-        });
-
-        comments = appComments;
-        renderComments();
+function fetchAndRender() {
+    const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/elena-nikitenko/comments", {
+        method: "GET",
     });
-});
+
+    fetchPromise.then((response) => {
+
+        const jsonPromise = response.json();
+
+        jsonPromise.then((responseData) => {
+            console.log(responseData);
+
+            const appComments = responseData.comments.map((comment) => {
+                return {
+                    name: comment.author.name,
+                    date: getDate(comment.date),
+                    text: comment.text,
+                    likes: comment.likes,
+                    isLiked: false,
+                }
+            });
+
+            comments = appComments;
+            renderComments();
+        });
+    });
+}
+
+fetchAndRender();
 
 let comments = [];
 
@@ -115,22 +122,11 @@ buttonElement.addEventListener("click", () => {
         return;
     }
 
-
-
-    comments.push({
-        name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
-        text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
-        date: currentDate,
-        likes: '0',
-        isLiked: false,
-    });
-
-
     const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/elena-nikitenko/comments", {
         method: "POST",
         body: JSON.stringify({
-            name: nameInputElement.value,
-            text: commentInputElement.value,  
+            name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
+            text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
         },)
     });
 
@@ -140,15 +136,11 @@ buttonElement.addEventListener("click", () => {
 
         jsonPromise.then((responseData) => {
             console.log(responseData);
-
-
             renderComments();
         });
+        fetchAndRender();
     });
-
-    renderComments();
 
     nameInputElement.value = "";
     commentInputElement.value = "";
-
 });
