@@ -152,3 +152,7 @@ body {
     border-radius: 7px;
     background-color:rgb(245, 234, 250);
   }
+
+  .hide {
+    display: none;
+  }

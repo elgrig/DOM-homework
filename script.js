@@ -2,6 +2,7 @@ const nameInputElement = document.getElementById('name-input');
 const commentInputElement = document.getElementById('comment-input');
 const listElement = document.getElementById('list');
 const buttonElement = document.getElementById('button-write');
+const preloaderElement = document.getElementById('preloader');
 
 
 function getDate(date) {
@@ -12,16 +13,14 @@ function getDate(date) {
 }
 
 
-function fetchAndRender() {
-    const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/elena-nikitenko/comments", {
+function fetchAndRenderComments() {
+    return fetch("https://wedev-api.sky.pro/api/v1/elena-nikitenko/comments", {
         method: "GET",
-    });
-
-    fetchPromise.then((response) => {
-
-        const jsonPromise = response.json();
-
-        jsonPromise.then((responseData) => {
+    })
+        .then((response) => {
+            return response.json();
+        })
+        .then((responseData) => {
             console.log(responseData);
 
             const appComments = responseData.comments.map((comment) => {
@@ -36,11 +35,9 @@ function fetchAndRender() {
 
             comments = appComments;
             renderComments();
+            preloaderElement.classList.add('hide');
         });
-    });
-}
-
-fetchAndRender();
+};
 
 let comments = [];
 
@@ -74,7 +71,6 @@ const renderComments = () => {
 
 };
 
-
 const initLikeComments = () => {
     const likeCommentsElements = document.querySelectorAll(".like-button");
     for (const likeCommentElement of likeCommentsElements) {
@@ -105,6 +101,7 @@ const initRepostCommentElements = () => {
     };
 };
 
+fetchAndRenderComments();
 renderComments();
 
 
@@ -122,6 +119,9 @@ buttonElement.addEventListener("click", () => {
         return;
     }
 
+    buttonElement.disabled = true;
+    buttonElement.textContent = 'Комментарий загружается...';
+
     const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/elena-nikitenko/comments", {
         method: "POST",
         body: JSON.stringify({
@@ -131,15 +131,15 @@ buttonElement.addEventListener("click", () => {
     });
 
     fetchPromise.then((response) => {
-
-        const jsonPromise = response.json();
-
-        jsonPromise.then((responseData) => {
-            console.log(responseData);
-            renderComments();
+        return response.json();
+    })
+        .then(() => {
+            return fetchAndRenderComments();
+        })
+        .then(() => {
+            buttonElement.disabled = false;
+            buttonElement.textContent = 'Написать';
         });
-        fetchAndRender();
-    });
 
     nameInputElement.value = "";
     commentInputElement.value = "";
