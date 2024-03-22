@@ -105,7 +105,7 @@ fetchAndRenderComments();
 renderComments();
 
 const postComment = () => {
-    
+
     nameInputElement.classList.remove('error');
     commentInputElement.classList.remove('error');
 
@@ -144,6 +144,8 @@ const postComment = () => {
         .then(() => {
             buttonElement.disabled = false;
             buttonElement.textContent = 'Написать';
+            nameInputElement.value = "";
+            commentInputElement.value = "";
         })
         .catch((error) => {
             buttonElement.disabled = false;
