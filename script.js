@@ -104,12 +104,10 @@ const initRepostCommentElements = () => {
 fetchAndRenderComments();
 renderComments();
 
-
-buttonElement.addEventListener("click", () => {
-
+const postComment = () => {
+    
     nameInputElement.classList.remove('error');
     commentInputElement.classList.remove('error');
-
 
     if (nameInputElement.value.trim() === "") {
         nameInputElement.classList.add('error');
@@ -122,46 +120,44 @@ buttonElement.addEventListener("click", () => {
     buttonElement.disabled = true;
     buttonElement.textContent = 'Комментарий загружается...';
 
-   const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/elena-nikitenko/comments", {
-            method: "POST",
-            body: JSON.stringify({
-                name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
-                text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
-                forceError: true,
-            },)
-        }).then((response) => {
-            if (response.status === 201) {
-                return response.json();
-            } else if (response.status === 400) {
-                throw new Error('Имя / коммент содержат менее 3 символов');
-            } else if (response.status === 500) {
-                throw new Error('Сервер недоступен');
-            } else {
-                throw new Error('Другая ошибка');
-            }
+    fetch("https://wedev-api.sky.pro/api/v1/elena-nikitenko/comments", {
+        method: "POST",
+        body: JSON.stringify({
+            name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
+            text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
+            forceError: true,
+        },)
+    }).then((response) => {
+        if (response.status === 201) {
+            return response.json();
+        } else if (response.status === 400) {
+            throw new Error('Имя / коммент содержат менее 3 символов');
+        } else if (response.status === 500) {
+            throw new Error('Сервер недоступен');
+        } else {
+            throw new Error('Другая ошибка');
+        }
+    })
+        .then(() => {
+            return fetchAndRenderComments();
         })
-            .then(() => {
-                return fetchAndRenderComments();
-            })
-            .then(() => {
-                buttonElement.disabled = false;
-                buttonElement.textContent = 'Написать';
-            })
-            .catch((error) => {
-                buttonElement.disabled = false;
-                buttonElement.textContent = 'Написать';
-                if (error.message === 'Имя / коммент содержат менее 3 символов') {
-                    alert('Поля "имя" / "комментарий" должны содержать хотя бы 3 символа');
-                    return;
-                } else if (error.message === 'Сервер недоступен') {
-                    alert('Сервер сломался, попробуйте позже'); 
-                    return fetchPromise();                   
-                } else {
-                    alert('Кажется, у вас сломался интернет, попробуйте позже');
-                }
-                console.log(error);
-            });
-                            
-    nameInputElement.value = "";
-    commentInputElement.value = "";
-});
+        .then(() => {
+            buttonElement.disabled = false;
+            buttonElement.textContent = 'Написать';
+        })
+        .catch((error) => {
+            buttonElement.disabled = false;
+            buttonElement.textContent = 'Написать';
+            if (error.message === 'Имя / коммент содержат менее 3 символов') {
+                alert('Поля "имя" / "комментарий" должны содержать хотя бы 3 символа');
+                return;
+            } else if (error.message === 'Сервер недоступен') {
+                postComment();
+            } else {
+                alert('Кажется, у вас сломался интернет, попробуйте позже');
+            }
+            console.log(error);
+        });
+};
+
+buttonElement.addEventListener("click", postComment);
