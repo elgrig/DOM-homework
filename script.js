@@ -18,7 +18,13 @@ function fetchAndRenderComments() {
         method: "GET",
     })
         .then((response) => {
-            return response.json();
+            if (response.status === 200) {
+                return response.json();
+            } else if (response.status === 500) {
+                throw new Error('Сервер недоступен');
+            } else {
+                throw new Error('Другая ошибка');
+            }
         })
         .then((responseData) => {
             console.log(responseData);
@@ -36,6 +42,13 @@ function fetchAndRenderComments() {
             comments = appComments;
             renderComments();
             preloaderElement.classList.add('hide');
+        })
+        .catch((error) => {
+            if (error.message === 'Сервер недоступен') {
+            fetchAndRenderComments();
+        } else {
+            alert('Кажется, у вас сломался интернет, попробуйте позже');        }
+        console.log(error);
         });
 };
 
