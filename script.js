@@ -45,7 +45,7 @@ function fetchAndRenderComments() {
         })
         .catch((error) => {
             if (error.message === 'Сервер недоступен') {
-            fetchAndRenderComments();
+            alert('Сервер недоступен');
         } else {
             alert('Кажется, у вас сломался интернет, попробуйте позже');        }
         console.log(error);
