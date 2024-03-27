@@ -4,8 +4,6 @@ export const setToken = (newToken) => {
     token = newToken;
 };
 
-
-
 export function getComments() {
     return fetch("https://wedev-api.sky.pro/api/v2/elena-nikitenko/comments", {
         method: "GET",

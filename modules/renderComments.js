@@ -2,9 +2,12 @@ import { postComment, token, setToken } from "./api.js";
 import { initLikeComments, initRepostCommentElements } from "./listeners.js";
 import { renderLogin } from "./renderLogin.js";
 
+const isAuth = false;
 
 export const renderComments = ({ comments, fetchAndRenderComments }) => {
-  const appElement = document.getElementById("app");
+
+  const container = document.querySelector(".container");
+
   const commentsHtml = comments.map((comment, index) => {
     return `<li class="comment">
     <div class="comment-header">
@@ -25,31 +28,25 @@ export const renderComments = ({ comments, fetchAndRenderComments }) => {
     </li > `
   }).join("");
 
+  const addForm = `
+  <div class="add-form">
+  <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input">
+  <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
+    id="comment-input"></textarea>
+    <div class="add-form-row">
+    <button class="add-form-button" id="button-write">Написать</button>
+    </div>  
+  </div>
+  `;
+  
+  const textAuth = `
+   <div class="authorizationRequest">Чтобы добавить комментарий, <button id="authorize-button" class="authorize-button">авторизуйтесь</button></div>
+   `;
 
-  const appHtmlAuthor = `
-    <div class="container" id="container">  
-    <ul class="comments" id="list">${commentsHtml}</ul>
-    <div class="add-form">
-    <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input">
-    <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
-      id="comment-input"></textarea>
-      <div class="add-form-row">
-      <button class="add-form-button" id="button-write">Написать</button>
-      </div>  
-    </div>
-    `;
-
-  const appHtmlNonAuthor = `
-    <div class="container" id="container">  
-    <ul class="comments" id="list">${commentsHtml}</ul>
-    <div class="authorizationRequest">Чтобы добавить комментарий, <button id="authorize-button" class="authorize-button">авторизуйтесь</button></div>
-  `
-
-  if (token === true) {
-    appElement.innerHTML = appHtmlAuthor;
-    postComments();    
-  } else { appElement.innerHTML = appHtmlNonAuthor };
-
+  container.innerHTML = `
+  ${commentsHtml}
+  ${isAuth ? addForm : textAuth}
+  `;
 
   const authorizeButtonElement = document.getElementById("authorize-button");
   authorizeButtonElement.addEventListener("click", () => {
