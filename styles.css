@@ -156,3 +156,28 @@ body {
   .hide {
     display: none;
   }
+
+  .authorizationRequest {
+    padding-top: 20px;
+  }
+
+  .button-register {
+    margin-top: 30px;
+    text-align:center;
+    border: none;
+    background-color: transparent;
+    color: white;
+    text-decoration: underline;
+    font-size: 18px;
+  }
+  .form-title {
+    text-align: center;
+  }
+
+  .authorize-button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    text-decoration: underline;
+  }
