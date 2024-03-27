@@ -4,6 +4,12 @@ export const setToken = (newToken) => {
     token = newToken;
 };
 
+
+export let user = {};
+export const setUser = (newUser) => {
+    user = newUser;
+}
+
 export function getComments() {
     return fetch("https://wedev-api.sky.pro/api/v2/elena-nikitenko/comments", {
         method: "GET",
@@ -60,3 +66,4 @@ export function login({ login, password }) {
         }
     });
 }
+

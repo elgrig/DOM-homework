@@ -1,12 +1,10 @@
-import { postComment, token, setToken } from "./api.js";
+import { postComment, user } from "./api.js";
 import { initLikeComments, initRepostCommentElements } from "./listeners.js";
 import { renderLogin } from "./renderLogin.js";
 
-const isAuth = false;
-
 export const renderComments = ({ comments, fetchAndRenderComments }) => {
 
-  const container = document.querySelector(".container");
+  const container = document.getElementById(".container");
 
   const commentsHtml = comments.map((comment, index) => {
     return `<li class="comment">
@@ -38,19 +36,22 @@ export const renderComments = ({ comments, fetchAndRenderComments }) => {
     </div>  
   </div>
   `;
-  
+
   const textAuth = `
    <div class="authorizationRequest">Чтобы добавить комментарий, <button id="authorize-button" class="authorize-button">авторизуйтесь</button></div>
    `;
 
   container.innerHTML = `
   ${commentsHtml}
-  ${isAuth ? addForm : textAuth}
+  ${user.token ? addForm : textAuth}
   `;
 
   const authorizeButtonElement = document.getElementById("authorize-button");
   authorizeButtonElement.addEventListener("click", () => {
-    renderLogin({ fetchAndRenderComments });
+    renderLogin({ fetchAndRenderComments }).then(res => {
+      setUser(res.user);
+      renderComments();
+    });
   });
 
   const nameInputElement = document.getElementById('name-input');
