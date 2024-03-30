@@ -1,14 +1,7 @@
-export let token;
-
-export const setToken = (newToken) => {
-    token = newToken;
-};
-
-
 export let user = {};
 export const setUser = (newUser) => {
     user = newUser;
-}
+};
 
 export function getComments() {
     return fetch("https://wedev-api.sky.pro/api/v2/elena-nikitenko/comments", {
@@ -27,7 +20,7 @@ export function postComment({ name, text }) {
     return fetch("https://wedev-api.sky.pro/api/v2/elena-nikitenko/comments", {
         method: "POST",
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${user.token}`,
         },
         body: JSON.stringify({
             name: name,

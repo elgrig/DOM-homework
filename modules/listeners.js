@@ -3,7 +3,7 @@ import { renderComments } from "./renderComments.js";
 
 
 
-export const initLikeComments = () => {
+export const initLikeComments = ({ fetchAndRenderComments }) => {
     const likeCommentsElements = document.querySelectorAll(".like-button");
     for (const likeCommentElement of likeCommentsElements) {
         likeCommentElement.addEventListener('click', (event) => {
@@ -17,7 +17,7 @@ export const initLikeComments = () => {
                 comments[index].likes--;
             }
             event.stopPropagation();
-            renderComments({ comments });
+            renderComments({ comments, fetchAndRenderComments });
         });
     };
 };

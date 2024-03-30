@@ -3,11 +3,10 @@ import { initLikeComments, initRepostCommentElements } from "./listeners.js";
 import { renderLogin } from "./renderLogin.js";
 
 export const renderComments = ({ comments, fetchAndRenderComments }) => {
-
-  const container = document.getElementById(".container");
-
+  const container = document.getElementById("container");
   const commentsHtml = comments.map((comment, index) => {
-    return `<li class="comment">
+    return `    
+    <li class="comment">
     <div class="comment-header">
         <div>${comment.name}</div>
         <div>${comment.date}</div>
@@ -23,12 +22,14 @@ export const renderComments = ({ comments, fetchAndRenderComments }) => {
             <button data-index="${index}" class="like-button ${comments[index].isLiked ? "-active-like" : ""}"></button>
     </div>
     </div >
-    </li > `
+    </li > 
+    `
   }).join("");
+
 
   const addForm = `
   <div class="add-form">
-  <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input">
+  <input type="text" class="add-form-name" value="${user ? user.name : ""}" readonly placeholder="Введите ваше имя" id="name-input">
   <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
     id="comment-input"></textarea>
     <div class="add-form-row">
@@ -41,67 +42,75 @@ export const renderComments = ({ comments, fetchAndRenderComments }) => {
    <div class="authorizationRequest">Чтобы добавить комментарий, <button id="authorize-button" class="authorize-button">авторизуйтесь</button></div>
    `;
 
-  container.innerHTML = `
-  ${commentsHtml}
+  container.innerHTML = ` 
+  <ul class="comments">${commentsHtml}</ul>
   ${user.token ? addForm : textAuth}
   `;
 
-  const authorizeButtonElement = document.getElementById("authorize-button");
-  authorizeButtonElement.addEventListener("click", () => {
-    renderLogin({ fetchAndRenderComments }).then(res => {
-      setUser(res.user);
-      renderComments();
+
+  if (!user.token) {
+    const authorizeButtonElement = document.getElementById("authorize-button");
+
+    authorizeButtonElement.addEventListener("click", () => {
+      renderLogin({ fetchAndRenderComments })
     });
-  });
+  }
 
-  const nameInputElement = document.getElementById('name-input');
-  const commentInputElement = document.getElementById('comment-input');
-  const buttonElement = document.getElementById('button-write');
+  if (user.token) {
 
-  const postComments = () => {
+    const buttonElement = document.getElementById('button-write');
 
-    nameInputElement.classList.remove('error');
-    commentInputElement.classList.remove('error');
+    const postComments = () => {
 
-    if (nameInputElement.value.trim() === "") {
-      nameInputElement.classList.add('error');
-      return;
-    } else if (commentInputElement.value.trim() === "") {
-      commentInputElement.classList.add('error');
-      return;
-    }
+      const nameInputElement = document.getElementById('name-input');
+      const commentInputElement = document.getElementById('comment-input');
 
-    buttonElement.disabled = true;
-    buttonElement.textContent = 'Комментарий загружается...';
+      nameInputElement.classList.remove('error');
+      commentInputElement.classList.remove('error');
 
-    postComment({
-      name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
-      text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
-    }).then(() => {
-      return fetchAndRenderComments();
-    }).then(() => {
-      buttonElement.disabled = false;
-      buttonElement.textContent = 'Написать';
-      nameInputElement.value = "";
-      commentInputElement.value = "";
-    }).catch((error) => {
-      buttonElement.disabled = false;
-      buttonElement.textContent = 'Написать';
-      if (error.message === 'Имя / коммент содержат менее 3 символов') {
-        alert('Поля "имя" / "комментарий" должны содержать хотя бы 3 символа');
+      if (nameInputElement.value.trim() === "") {
+        nameInputElement.classList.add('error');
         return;
-      } else if (error.message === 'Сервер недоступен') {
-        postComments();
-      } else {
-        alert('Пожалуйста, авторизуйтесь, чтобы написать комментарий');
+      } else if (commentInputElement.value.trim() === "") {
+        commentInputElement.classList.add('error');
+        return;
       }
-      console.log(error);
-    });
+
+      buttonElement.disabled = true;
+      buttonElement.textContent = 'Комментарий загружается...';
+
+      postComment({
+        name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
+        text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
+      }).then(() => {
+        return fetchAndRenderComments();
+      }).then(() => {
+        buttonElement.disabled = false;
+        buttonElement.textContent = 'Написать';
+        nameInputElement.value = "";
+        commentInputElement.value = "";
+      }).catch((error) => {
+        buttonElement.disabled = false;
+        buttonElement.textContent = 'Написать';
+        if (error.message === 'Имя / коммент содержат менее 3 символов') {
+          alert('Поля "имя" / "комментарий" должны содержать хотя бы 3 символа');
+          return;
+        } else if (error.message === 'Сервер недоступен') {
+          postComments();
+        } else {
+          alert('Пожалуйста, авторизуйтесь, чтобы написать комментарий');
+        }
+        console.log(error);
+      });
+    };
+
+    buttonElement.addEventListener("click", postComments);
+
   };
 
-  buttonElement.addEventListener("click", postComments);
 
-  initLikeComments();
+  initLikeComments({ fetchAndRenderComments });
 
   initRepostCommentElements();
+
 };

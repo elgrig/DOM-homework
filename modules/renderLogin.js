@@ -1,7 +1,7 @@
-import { login, setToken, token } from "./api.js";
+import { login, setUser } from "./api.js";
 
 export const renderLogin = ({ fetchAndRenderComments }) => {
-    const appElement = document.getElementById("app");
+    const appElement = document.getElementById("container");
     const loginHtml = `
     <div class="container">
         <div class="add-form">
@@ -26,9 +26,7 @@ export const renderLogin = ({ fetchAndRenderComments }) => {
             login: loginInputElement.value,
             password: passwordInputElement.value,
         }).then((responseData) => {
-            console.log(token);
-            setToken(responseData.user.token);
-            console.log(token);
+            setUser(responseData.user);
         }).then(() => {
             fetchAndRenderComments();
         }).catch((error) => {

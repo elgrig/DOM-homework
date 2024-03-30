@@ -2,11 +2,13 @@ import { getComments } from "./modules/api.js";
 import { getDate } from "./modules/date.js";
 import { renderComments } from "./modules/renderComments.js";
 
-const preloaderElement = document.getElementById('preloader');
+
+
 
 export let comments = [];
 
 function fetchAndRenderComments() {
+
     getComments().then((responseData) => {
         console.log(responseData);
         const appComments = responseData.comments.map((comment) => {
@@ -31,7 +33,7 @@ function fetchAndRenderComments() {
     });
 };
 
-renderComments({ comments, fetchAndRenderComments });
+fetchAndRenderComments();
 
 
 
