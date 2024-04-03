@@ -1,5 +1,5 @@
 import { comments } from "../main.js";
-import { renderComments } from "./renderComments.js";
+import { renderApp } from "./renderApp.js";
 
 
 
@@ -17,7 +17,7 @@ export const initLikeComments = ({ fetchAndRenderComments }) => {
                 comments[index].likes--;
             }
             event.stopPropagation();
-            renderComments({ comments, fetchAndRenderComments });
+            renderApp({ comments, fetchAndRenderComments });
         });
     };
 };
