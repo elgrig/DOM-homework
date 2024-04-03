@@ -3,11 +3,16 @@ import { getDate } from "./modules/date.js";
 import { renderComments } from "./modules/renderComments.js";
 
 
-
+const preloaderElement = `
+<div class="preloader" id="preloader">Страница загружается...</div>
+`;
 
 export let comments = [];
 
 function fetchAndRenderComments() {
+
+    const container = document.getElementById("container");
+    container.innerHTML = preloaderElement;
 
     getComments().then((responseData) => {
         console.log(responseData);
@@ -22,8 +27,8 @@ function fetchAndRenderComments() {
         });
         comments = appComments;
         renderComments({ comments, fetchAndRenderComments });
-        preloaderElement.classList.add('hide');
-    }).catch((error) => {
+
+        }).catch((error) => {
         if (error.message === 'Сервер недоступен') {
             console.log(error); // alert(error.message);
         } else {

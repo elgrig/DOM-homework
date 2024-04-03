@@ -60,3 +60,24 @@ export function login({ login, password }) {
     });
 }
 
+export function registration({ name, login, password }) {
+    return fetch("https://wedev-api.sky.pro/api/user", {
+        method: "POST",
+        body: JSON.stringify({
+            name,
+            login,
+            password,
+        },)
+    }).then((response) => {
+        if (response.status === 201) {
+            return response.json();
+        } else if (response.status === 400) {
+            throw new Error('Пользователь с таким логином уже существует');
+        } else if (response.status === 500) {
+            throw new Error('Сервер недоступен');
+        } else {
+            throw new Error('Другая ошибка');
+        }
+    });
+}
+

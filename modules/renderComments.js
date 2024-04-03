@@ -98,7 +98,7 @@ export const renderComments = ({ comments, fetchAndRenderComments }) => {
         } else if (error.message === 'Сервер недоступен') {
           postComments();
         } else {
-          alert('Пожалуйста, авторизуйтесь, чтобы написать комментарий');
+          alert('Кажется, интернет сломался, попробуйте позже');
         }
         console.log(error);
       });
@@ -109,8 +109,12 @@ export const renderComments = ({ comments, fetchAndRenderComments }) => {
   };
 
 
-  initLikeComments({ fetchAndRenderComments });
+  if (user.token) {
+    initLikeComments({ fetchAndRenderComments });
+  };
 
-  initRepostCommentElements();
+  if (user.token) {
+    initRepostCommentElements();
+  };
 
 };
