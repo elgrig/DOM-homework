@@ -6,6 +6,7 @@ export const renderLogin = ({ fetchAndRenderComments }) => {
     const appElement = document.getElementById("container");
 
     const loginHtml = `
+    <div class="container">
         <div class="add-form">
             <h3 class="form-title">Форма входа</h3>
             <input type="text" id="login-input" class="add-form-text" placeholder="Логин" />
@@ -14,6 +15,7 @@ export const renderLogin = ({ fetchAndRenderComments }) => {
             <button class="link" id="link-register">Зарегистрироваться</button>
         </div>
         <br />
+    </div>
     `;
 
     appElement.innerHTML = loginHtml;
@@ -53,10 +55,10 @@ export const renderLogin = ({ fetchAndRenderComments }) => {
         }).then((responseData) => {
 
             setUser(responseData.user);
-            // localStorage.setItem
         }).then(() => {
             fetchAndRenderComments();
         }).catch((error) => {
+            alert(error.message);
             console.log(error);
         })
     });
