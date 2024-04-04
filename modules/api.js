@@ -1,4 +1,4 @@
-export let user = {};
+export let user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {};
 export const setUser = (newUser) => {
     user = newUser;
 };

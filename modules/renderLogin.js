@@ -53,7 +53,7 @@ export const renderLogin = ({ fetchAndRenderComments }) => {
             password: passwordInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
 
         }).then((responseData) => {
-
+            localStorage.setItem("user", JSON.stringify(responseData.user));
             setUser(responseData.user);
         }).then(() => {
             fetchAndRenderComments();
