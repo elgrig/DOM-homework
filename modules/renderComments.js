@@ -2,64 +2,84 @@ import { postComment, user } from "./api.js";
 import { initLikeComments, initRepostCommentElements } from "./listeners.js";
 import { renderLogin } from "./renderLogin.js";
 
-export const renderComments = ({ comments, fetchAndRenderComments }) => {
-  const container = document.getElementById("container");
-  const commentsHtml = comments.map((comment, index) => {
-    return `    
-    <li class="comment">
-    <div class="comment-header">
-        <div>${comment.name}</div>
-        <div>${comment.date}</div>
+export function renderMainPage({ comments,fetchAndRenderComments }) {
+    const container = document.getElementById("container");
+    const commentsHtml = comments.map((comment, index) => {
+      return `    
+      <li class="comment">
+      <div class="comment-header">
+          <div>${comment.name}</div>
+          <div>${comment.date}</div>
+      </div>
+      <div class="comment-body" data-index="${index}">    
+          <div class="comment-text">
+          ${comment.text.replaceAll("QUOTE_BEGIN", "<div class='quote'>").replaceAll("QUOTE_END", "</div>")}
+          </div>
+      </div>
+      <div class="comment-footer">
+          <div class="likes">
+              <span class="likes-counter">${comment.likes}</span>
+              <button data-index="${index}" class="like-button ${comments[index].isLiked ? "-active-like" : ""}"></button>
+      </div>
+      </div >
+      </li > 
+      `
+    }).join("");
+
+    container.innerHTML = `<ul class="comments">${commentsHtml}</ul><div class="form"></div>`;
+
+    renderForm({ fetchAndRenderComments });
+
+    fetchAndRenderComments();
+    
+  }
+
+  // renderMainPage({ comments, fetchAndRenderComments });
+
+  function renderForm({ fetchAndRenderComments }) {
+
+    const container = document.querySelector(".form ");
+
+    const addForm = `
+    <div class="add-form">
+    <input type="text" class="add-form-name" value="${user ? user.name : ""}" readonly placeholder="Введите ваше имя" id="name-input">
+    <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
+      id="comment-input"></textarea>
+      <div class="add-form-row">
+      <button class="add-form-button" id="button-write">Написать</button>
+      </div>  
     </div>
-    <div class="comment-body" data-index="${index}">    
-        <div class="comment-text">
-        ${comment.text.replaceAll("QUOTE_BEGIN", "<div class='quote'>").replaceAll("QUOTE_END", "</div>")}
-        </div>
-    </div>
-    <div class="comment-footer">
-        <div class="likes">
-            <span class="likes-counter">${comment.likes}</span>
-            <button data-index="${index}" class="like-button ${comments[index].isLiked ? "-active-like" : ""}"></button>
-    </div>
-    </div >
-    </li > 
-    `
-  }).join("");
+    `;
 
+    const textAuth = `
+    <div class="authorizationRequest">Чтобы добавить комментарий, <button id="authorize-button" class="authorize-button">авторизуйтесь</button></div>
+    `;
 
-  const addForm = `
-  <div class="add-form">
-  <input type="text" class="add-form-name" value="${user ? user.name : ""}" readonly placeholder="Введите ваше имя" id="name-input">
-  <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
-    id="comment-input"></textarea>
-    <div class="add-form-row">
-    <button class="add-form-button" id="button-write">Написать</button>
-    </div>  
-  </div>
-  `;
+    if (user.token) {
 
-  const textAuth = `
-   <div class="authorizationRequest">Чтобы добавить комментарий, <button id="authorize-button" class="authorize-button">авторизуйтесь</button></div>
-   `;
+      container.innerHTML = addForm;
 
-  container.innerHTML = ` 
-  <ul class="comments">${commentsHtml}</ul>
-  ${user.token ? addForm : textAuth}
-  `;
+      const buttonElement = document.getElementById("button-write");
+ 
+      buttonElement.addEventListener("click", postComments);
 
+      initLikeComments({ fetchAndRenderComments });
 
-  if (!user.token) {
+      initRepostCommentElements();
+
+    } else {
+
+    container.innerHTML = textAuth;   
+
     const authorizeButtonElement = document.getElementById("authorize-button");
 
     authorizeButtonElement.addEventListener("click", () => {
-      renderLogin({ fetchAndRenderComments })
+      renderLogin({ fetchAndRenderComments });
     });
-  }
 
-  if (user.token) {
-
-    const buttonElement = document.getElementById('button-write');
-
+    renderMainPage({ comments, fetchAndRenderComments });
+  };
+  
     const postComments = () => {
 
       const nameInputElement = document.getElementById('name-input');
@@ -104,17 +124,13 @@ export const renderComments = ({ comments, fetchAndRenderComments }) => {
       });
     };
 
-    buttonElement.addEventListener("click", postComments);
+
 
   };
+ 
 
 
-  if (user.token) {
-    initLikeComments({ fetchAndRenderComments });
-  };
 
-  if (user.token) {
-    initRepostCommentElements();
-  };
 
-};
+
+
