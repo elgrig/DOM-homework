@@ -1,5 +1,4 @@
 import { login, setUser } from "./api.js";
-import { renderMainPage } from "./renderComments.js";
 import { renderRegistration } from "./renderRegistration.js";
 
 export const renderLogin = ({ fetchAndRenderComments }) => {
@@ -37,23 +36,27 @@ export const renderLogin = ({ fetchAndRenderComments }) => {
         loginInputElement.classList.remove('error');
         passwordInputElement.classList.remove('error');
 
-        if (loginInputElement.value.trim() === "" ) {
-            loginInputElement.classList.add('error');            
+        if (loginInputElement.value.trim() === "" && passwordInputElement.value.trim() === "") {
+            loginInputElement.classList.add('error');
+            passwordInputElement.classList.add('error');
+            return;
+        } else if (loginInputElement.value.trim() === "") {
+            loginInputElement.classList.add('error');
             return;
         } else if (passwordInputElement.value.trim() === "") {
             passwordInputElement.classList.add('error');
             return;
-        } 
+        }
 
         login({
             login: loginInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
             password: passwordInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
 
         }).then((responseData) => {
-            // localStorage.setItem("user", JSON.stringify(responseData.user));
+            localStorage.setItem("user", JSON.stringify(responseData.user));
             setUser(responseData.user);
         }).then(() => {
-            renderMainPage({ comments, fetchAndRenderComments });
+            fetchAndRenderComments();
         }).catch((error) => {
             alert(error.message);
             console.log(error);
