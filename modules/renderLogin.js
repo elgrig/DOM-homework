@@ -1,4 +1,5 @@
 import { login, setUser } from "./api.js";
+import { renderMainPage } from "./renderComments.js";
 import { renderRegistration } from "./renderRegistration.js";
 
 export const renderLogin = ({ fetchAndRenderComments }) => {
@@ -53,10 +54,11 @@ export const renderLogin = ({ fetchAndRenderComments }) => {
             password: passwordInputElement.value.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;"),
 
         }).then((responseData) => {
-            localStorage.setItem("user", JSON.stringify(responseData.user));
+            // localStorage.setItem("user", JSON.stringify(responseData.user));
             setUser(responseData.user);
         }).then(() => {
-            fetchAndRenderComments();
+            // fetchAndRenderComments();
+            renderMainPage({ fetchAndRenderComments });
         }).catch((error) => {
             alert(error.message);
             console.log(error);
