@@ -1,19 +1,10 @@
 import { getComments } from "./modules/api.js";
 import { getDate } from "./modules/date.js";
-import { renderComments } from "./modules/renderComments.js";
-
-
-const preloaderElement = `
-<div class="preloader" id="preloader">Страница загружается...</div>
-`;
+import { renderComments, renderForm } from "./modules/renderComments.js";
 
 export let comments = [];
 
-function fetchAndRenderComments() {
-
-    const container = document.getElementById("container");
-    container.innerHTML = preloaderElement;
-
+export function fetchAndRenderComments() {
     getComments().then((responseData) => {
         console.log(responseData);
         const appComments = responseData.comments.map((comment) => {
@@ -26,8 +17,9 @@ function fetchAndRenderComments() {
             }
         });
         comments = appComments;
-        renderComments({ comments, fetchAndRenderComments });
-
+        renderComments({ comments });
+        const preloaderElement = document.getElementById("preloader");
+        preloaderElement.classList.add('hide');
         }).catch((error) => {
         if (error.message === 'Сервер недоступен') {
             console.log(error); // alert(error.message);
@@ -38,7 +30,14 @@ function fetchAndRenderComments() {
     });
 };
 
-fetchAndRenderComments();
+export function renderMainPage() {
+    const container = document.getElementById("container");
+    container.innerHTML = `<div class="preloader" id="preloader">Страница загружается...</div><ul class="comments"></ul><div class="form"></div>`;
+    renderForm();
+    fetchAndRenderComments();
+  };
+  
+renderMainPage();
 
 
 

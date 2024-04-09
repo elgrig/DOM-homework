@@ -1,7 +1,7 @@
 import { registration, setUser } from "./api.js";
 import { renderLogin } from "./renderLogin.js";
 
-export const renderRegistration = ({ fetchAndRenderComments }) => {
+export const renderRegistration = () => {
 
     const appElement = document.getElementById("container");
 
@@ -22,7 +22,7 @@ export const renderRegistration = ({ fetchAndRenderComments }) => {
 
     const linkEnterElement = document.getElementById("link-enter");
     linkEnterElement.addEventListener("click", () => {
-        renderLogin({ fetchAndRenderComments });        
+        renderLogin();        
     })
 
     const nameInputElement = document.getElementById("name-input");
@@ -31,6 +31,28 @@ export const renderRegistration = ({ fetchAndRenderComments }) => {
 
     const registerButtonElement = document.getElementById("register-button");
     registerButtonElement.addEventListener("click", () => {
+
+        nameInputElement.classList.remove('error');
+        loginInputElement.classList.remove('error');        
+        passwordInputElement.classList.remove('error');
+
+        if (nameInputElement.value.trim() === "" && loginInputElement.value.trim() === "" && passwordInputElement.value.trim() === "") {
+            nameInputElement.classList.add('error');
+            loginInputElement.classList.add('error');
+            passwordInputElement.classList.add('error');
+            return;
+        } else if (nameInputElement.value.trim() === "") {
+            nameInputElement.classList.add('error');
+            return;
+        } else if (loginInputElement.value.trim() === "") {
+            loginInputElement.classList.add('error');
+            return;
+        } else if (passwordInputElement.value.trim() === "") {
+            passwordInputElement.classList.add('error');
+            return;
+        }
+
+
         registration ({
             name: nameInputElement.value,
             login: loginInputElement.value,
@@ -38,7 +60,7 @@ export const renderRegistration = ({ fetchAndRenderComments }) => {
         }).then((responseData) => {
             setUser(responseData.user);
         }).then(() => {
-            fetchAndRenderComments();
+            renderLogin();
         }).catch((error) => {
             if (error.message = 'Пользователь с таким логином уже существует') {
                 alert(error.message);

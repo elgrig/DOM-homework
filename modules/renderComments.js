@@ -1,10 +1,11 @@
+import { fetchAndRenderComments } from "../main.js";
 import { postComment, user } from "./api.js";
 import { initLikeComments, initRepostCommentElements } from "./listeners.js";
 import { renderLogin } from "./renderLogin.js";
 
-export const renderComments = ({ comments, fetchAndRenderComments }) => {
+export const renderComments = ({ comments }) => {
 
-  const container = document.querySelector(".container");
+  const container = document.querySelector(".comments");
   const commentsHtml = comments.map((comment, index) => {
     return `    
     <li class="comment">
@@ -27,26 +28,25 @@ export const renderComments = ({ comments, fetchAndRenderComments }) => {
     `
   }).join("");
 
-  container.innerHTML = `<ul class="comments">${commentsHtml}</ul>`;
+  container.innerHTML = commentsHtml;
+
+  if (user?.token) {
+
+  initLikeComments();
+
+  initRepostCommentElements();
+
+  }
 
 };
 
-export function renderMainPage({ fetchAndRenderComments }) {
-  const container = document.getElementById("container");
-  container.innerHTML = `<ul class="comments"></ul><div class="form"></div>`;
-  renderForm();
-  fetchAndRenderComments();
-}
-
-renderMainPage({ fetchAndRenderComments });
-
-function renderForm() {
+export function renderForm() {
 
   const container = document.querySelector(".form");
       
   const addForm = `
     <div class="add-form">
-    <input type="text" class="add-form-name" value="${user ? user.name : ""}" readonly placeholder="Введите ваше имя" id="name-input">
+    <input type="text" class="add-form-name" value="${user ? user.name.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll('"', "&quot;") : ""}" readonly placeholder="Введите ваше имя" id="name-input">
     <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
       id="comment-input"></textarea>
       <div class="add-form-row">
@@ -59,17 +59,13 @@ function renderForm() {
     <div class="authorizationRequest">Чтобы добавить комментарий, <button id="authorize-button" class="authorize-button">авторизуйтесь</button></div>
     `;
 
-  if (user.token) {
+  if (user?.token) {
 
       container.innerHTML = addForm;
 
       const buttonElement = document.getElementById('button-write');
 
       buttonElement.addEventListener("click", postComments);
-
-      initLikeComments({ fetchAndRenderComments });
-
-      initRepostCommentElements();
 
     } else {    
 
@@ -78,7 +74,7 @@ function renderForm() {
       const authorizeButtonElement = document.getElementById("authorize-button");
 
       authorizeButtonElement.addEventListener("click", () => {
-        renderLogin({ fetchAndRenderComments })
+        renderLogin()
       });
     }    
   }
@@ -87,6 +83,8 @@ function renderForm() {
 
       const nameInputElement = document.getElementById('name-input');
       const commentInputElement = document.getElementById('comment-input');
+
+      const buttonElement = document.getElementById('button-write');
 
       nameInputElement.classList.remove('error');
       commentInputElement.classList.remove('error');
@@ -110,7 +108,6 @@ function renderForm() {
       }).then(() => {
         buttonElement.disabled = false;
         buttonElement.textContent = 'Написать';
-        nameInputElement.value = "";
         commentInputElement.value = "";
       }).catch((error) => {
         buttonElement.disabled = false;
