@@ -1,7 +1,7 @@
 import { comments } from "../main.js";
 import { renderComments } from "./renderComments.js";
 
-const commentInputElement = document.getElementById('comment-input');
+
 
 export const initLikeComments = () => {
     const likeCommentsElements = document.querySelectorAll(".like-button");
@@ -22,7 +22,10 @@ export const initLikeComments = () => {
     };
 };
 
+
+
 export const initRepostCommentElements = () => {
+    const commentInputElement = document.getElementById('comment-input');
     const repostCommentElements = document.querySelectorAll(".comment-body");
     for (const repostCommentElement of repostCommentElements) {
         repostCommentElement.addEventListener('click', () => {
