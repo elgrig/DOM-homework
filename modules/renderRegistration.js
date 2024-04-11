@@ -62,7 +62,7 @@ export const renderRegistration = () => {
         }).then(() => {
             renderLogin();
         }).catch((error) => {
-            if (error.message = 'Пользователь с таким логином уже существует') {
+            if (error.message === 'Пользователь с таким логином уже существует') {
                 alert(error.message);
                 console.log(error);
             } else {
